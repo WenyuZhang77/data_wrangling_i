@@ -27,3 +27,65 @@ pulse_tidy =
     visit = factor("visit")
   )
 ```
+
+## pivot\_wider
+
+make up a results data table
+
+``` r
+analysis_df = 
+  tibble(
+    group = c("treatment", "treatment", "control", "control"),
+    time = c("a", "b", "a", "b"),
+    group_mean = c(4, 8, 3, 6)
+  )
+```
+
+``` r
+analysis_df %>%
+  pivot_wider(
+    names_from = "time",
+    values_from = "group_mean"
+  ) %>%
+  knitr::kable()
+```
+
+| group     |   a |   b |
+|:----------|----:|----:|
+| treatment |   4 |   8 |
+| control   |   3 |   6 |
+
+## bind\_rows
+
+import the LotR words
+
+``` r
+fellowship_df = 
+  read_excel("data/LotR_Words.xlsx", range = "B3:D6") %>%
+  mutate(movie = "fellowship_rings")
+```
+
+``` r
+two_towers_df = 
+  read_excel("data/LotR_Words.xlsx", range = "F3:H6") %>%
+  mutate(movie = "two_towers")
+```
+
+``` r
+return_df = 
+  read_excel("data/LotR_Words.xlsx", range = "J3:L6") %>%
+  mutate(movie = "return_king")
+```
+
+``` r
+lotr_df = 
+  bind_rows(fellowship_df, two_towers_df, return_df) %>%
+  janitor::clean_names() %>%
+  pivot_longer(
+    female:male,
+    names_to = "sex",
+    values_to = "words"
+  ) %>%
+  relocate(movie) %>%
+  mutate(race =  str_to_lower(race))
+```
